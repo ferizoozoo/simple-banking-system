@@ -9,11 +9,29 @@ public class Main {
     static Random random = new Random();
     static String[] account;
     
+    public static String luhnAlgorithm(String accountNumberWithoutCheckSum) {
+        int sum = 0;
+        for (int i = 0; i < accountNumberWithoutCheckSum.length(); i++) {
+            int digit = Integer.parseInt(String.valueOf(accountNumberWithoutCheckSum.charAt(i)));
+            if ((i + 1) % 2 == 1 && digit * 2 > 9) {
+                sum += digit * 2 - 9;
+            } else if ((i + 1) % 2 == 1 && digit * 2 < 9) {
+                sum += digit * 2;
+            } else {
+                sum += digit;
+            }
+        }
+        return sum % 10 != 0 ? String.valueOf(10 - sum % 10) : String.valueOf(0);
+    }
+    
     public static String generateAccountNumber() {
         String accountNumber = "400000";
-        for (int i = 0; i < 10; i++) {
+        // Accountnumber without the checksum
+        for (int i = 0; i < 9; i++) {
             accountNumber += String.valueOf(random.nextInt(10));
         }
+        // Add the checksum to the accountnumber
+        accountNumber += luhnAlgorithm(accountNumber);
         return accountNumber;
     }
     

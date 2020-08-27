@@ -1,5 +1,7 @@
 package banking;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.Random;
 
@@ -47,7 +49,9 @@ public class Main {
         String accountNumber = generateAccountNumber();
         String pin = generatePin();
         System.out.printf("Your card has been created\nYour card number:\n%s\nYour card PIN:\n%s\n\n", accountNumber, pin);
-        account = new String[] {accountNumber, pin, "0"};
+        String[] user = new String[] {accountNumber, pin, "0"};
+        Db.saveRecord(user);
+        account = user;
     }
     
     public static void logIn() {
@@ -55,7 +59,9 @@ public class Main {
         String accountNumber = scanner.nextLine();
         System.out.println("Enter your PIN:");
         String pin = scanner.nextLine();
-        if (accountNumber.equals(account[0]) & pin.equals(account[1])) {
+        String[] result = Db.getRecord(accountNumber, pin);
+        if (result != null) {
+            account = result;
             System.out.println("You have successfully logged in!\n");
             accountMenu();
         } else {
@@ -102,8 +108,14 @@ public class Main {
     }
     
     public static void main(String[] args) {
-        while (true) {
-            mainMenu();
+        if (args.length == 2 && args[0].equals("-fileName")) {
+            Db.fileName = args[1];
+            Db.createTable();
+            while (true) {
+                mainMenu();
+            }
+        } else {
+            System.out.println("Provide a filename for your database.");
         }
     }
 }
